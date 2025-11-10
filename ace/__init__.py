@@ -19,6 +19,12 @@ from .adaptation import (
     EnvironmentResult,
     AdapterStepResult,
 )
+from .metrics import MetricsCalculator
+from .patent import (
+    PatentSample,
+    PatentMatchEnvironment,
+    PatentEnvironmentResult,
+)
 
 __all__ = [
     "Bullet",
@@ -40,4 +46,8 @@ __all__ = [
     "TaskEnvironment",
     "EnvironmentResult",
     "AdapterStepResult",
+    "MetricsCalculator",
+    "PatentSample",
+    "PatentMatchEnvironment",
+    "PatentEnvironmentResult",
 ]

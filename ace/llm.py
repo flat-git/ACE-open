@@ -9,7 +9,10 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Any, Deque, Dict, Optional, Union
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
 
 
 @dataclass
@@ -189,7 +192,8 @@ class DeepseekLLMClient(LLMClient):
                 "或:\n"
                 "  pip install openai>=1.0.0"
             ) from e
-        load_dotenv()
+        if load_dotenv:
+            load_dotenv()
         self._system_prompt = system_prompt or (
             "You are a JSON-only assistant that MUST reply with a single valid JSON object without extra text.\n"
             "Reasoning: low\n"

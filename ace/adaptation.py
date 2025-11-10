@@ -112,13 +112,29 @@ class AdapterBase:
         step_index: int,
         total_steps: int,
     ) -> AdapterStepResult:
+        # Prepare generator kwargs - pass patent-specific fields if available
+        generator_kwargs = {}
+        if hasattr(sample, "claim"):
+            generator_kwargs["claim"] = sample.claim
+        if hasattr(sample, "paragraph"):
+            generator_kwargs["paragraph"] = sample.paragraph
+            
         generator_output = self.generator.generate(
             question=sample.question,
             context=sample.context,
             playbook=self.playbook,
             reflection=self._reflection_context(),
+            **generator_kwargs,
         )
         env_result = environment.evaluate(sample, generator_output)
+        
+        # Prepare reflector kwargs - pass patent-specific fields if available
+        reflector_kwargs = {}
+        if hasattr(sample, "claim"):
+            reflector_kwargs["claim"] = sample.claim
+        if hasattr(sample, "paragraph"):
+            reflector_kwargs["paragraph"] = sample.paragraph
+        
         reflection = self.reflector.reflect(
             question=sample.question,
             generator_output=generator_output,
@@ -126,6 +142,7 @@ class AdapterBase:
             ground_truth=env_result.ground_truth,
             feedback=env_result.feedback,
             max_refinement_rounds=self.max_refinement_rounds,
+            **reflector_kwargs,
         )
         self._apply_bullet_tags(reflection)
         self._update_recent_reflections(reflection)
