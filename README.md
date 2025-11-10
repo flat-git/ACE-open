@@ -66,6 +66,16 @@ adapter.run(samples, ToyEnv(), epochs=1)
 
 Replace `DummyLLMClient` with a production LLM client (e.g., OpenAI, DeepSeek) and implement a task-specific `TaskEnvironment` to integrate real execution feedback from AppWorld or domain benchmarks.
 
+### PATENTMATCH Example
+
+For patent novelty assessment tasks:
+
+```bash
+PYTHONPATH=. python examples/patentmatch_demo.py
+```
+
+See [PATENTMATCH documentation](docs/PATENTMATCH.md) for detailed usage.
+
 ## Extending to Full Experiments
 
 - Implement an `LLMClient` subclass that wraps your chosen model API.
