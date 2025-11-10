@@ -10,6 +10,8 @@ The code follows the paper’s design:
 
 Refer to `docs/method_outline.md` for a distilled summary of the methodology extracted from the paper.
 
+**NEW: PATENTMATCH Task Support** - The framework has been adapted to support patent novelty assessment tasks. See [PATENTMATCH documentation](docs/PATENTMATCH.md) for details.
+
 ## Repository Layout
 
 - `ace/`: core library modules (playbook store, delta operations, roles, adaptation drivers, prompts, LLM abstractions).

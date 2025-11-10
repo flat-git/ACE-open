@@ -64,12 +64,21 @@ class Generator:
         reflection: Optional[str] = None,
         **kwargs: Any,
     ) -> GeneratorOutput:
-        base_prompt = self.prompt_template.format(
-            playbook=playbook.as_prompt() or "(empty playbook)",
-            reflection=_format_optional(reflection),
-            question=question,
-            context=_format_optional(context),
-        )
+        # Support both generic question format and patent-specific format
+        format_dict = {
+            "playbook": playbook.as_prompt() or "(empty playbook)",
+            "reflection": _format_optional(reflection),
+            "question": question,
+            "context": _format_optional(context),
+        }
+        
+        # Add patent-specific fields if provided in kwargs
+        if "claim" in kwargs:
+            format_dict["claim"] = kwargs.pop("claim")
+        if "paragraph" in kwargs:
+            format_dict["paragraph"] = kwargs.pop("paragraph")
+        
+        base_prompt = self.prompt_template.format(**format_dict)
         prompt = base_prompt
         last_error: Optional[Exception] = None
         for attempt in range(self.max_retries):
@@ -144,14 +153,24 @@ class Reflector:
         **kwargs: Any,
     ) -> ReflectorOutput:
         playbook_excerpt = _make_playbook_excerpt(playbook, generator_output.bullet_ids)
-        base_prompt = self.prompt_template.format(
-            question=question,
-            reasoning=generator_output.reasoning,
-            prediction=generator_output.final_answer,
-            ground_truth=_format_optional(ground_truth),
-            feedback=_format_optional(feedback),
-            playbook_excerpt=playbook_excerpt or "(no bullets referenced)",
-        )
+        
+        # Build format dictionary for prompt
+        format_dict = {
+            "question": question,
+            "reasoning": generator_output.reasoning,
+            "prediction": generator_output.final_answer,
+            "ground_truth": _format_optional(ground_truth),
+            "feedback": _format_optional(feedback),
+            "playbook_excerpt": playbook_excerpt or "(no bullets referenced)",
+        }
+        
+        # Add patent-specific fields if provided
+        if "claim" in kwargs:
+            format_dict["claim"] = kwargs.pop("claim")
+        if "paragraph" in kwargs:
+            format_dict["paragraph"] = kwargs.pop("paragraph")
+        
+        base_prompt = self.prompt_template.format(**format_dict)
         result: Optional[ReflectorOutput] = None
         prompt = base_prompt
         last_error: Optional[Exception] = None
